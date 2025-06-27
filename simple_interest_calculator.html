@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Interest Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .calculator-header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .calculator-header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .formula {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+
+        .formula h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .formula p {
+            color: #666;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+
+        .result-label {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .result-value {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .clear-btn {
+            width: 100%;
+            padding: 12px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .clear-btn:hover {
+            background: #5a6268;
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 480px) {
+            .calculator-container {
+                padding: 30px 20px;
+            }
+            
+            .calculator-header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="calculator-header">
+            <h1>Simple Interest Calculator</h1>
+            <p>Calculate simple interest quickly and easily</p>
+        </div>
+
+        <div class="formula">
+            <h3>Formula:</h3>
+            <p>Simple Interest = P × T × R / 100</p>
+            <p style="font-size: 0.9em; margin-top: 5px;">
+                P = Principal, T = Time (years), R = Rate (%)
+            </p>
+        </div>
+
+        <form id="calculatorForm">
+            <div class="input-group">
+                <label for="principal">Principal Amount ($)</label>
+                <input type="number" id="principal" step="0.01" min="0" required>
+                <div class="error" id="principalError"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="time">Time Period (Years)</label>
+                <input type="number" id="time" step="0.1" min="0" required>
+                <div class="error" id="timeError"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="rate">Annual Interest Rate (%)</label>
+                <input type="number" id="rate" step="0.01" min="0" required>
+                <div class="error" id="rateError"></div>
+            </div>
+
+            <button type="submit" class="calculate-btn">Calculate Simple Interest</button>
+        </form>
+
+        <div class="result-container" id="resultContainer">
+            <div class="result-item">
+                <span class="result-label">Principal Amount:</span>
+                <span class="result-value" id="resultPrincipal">$0.00</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Time Period:</span>
+                <span class="result-value" id="resultTime">0 years</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Interest Rate:</span>
+                <span class="result-value" id="resultRate">0%</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Simple Interest:</span>
+                <span class="result-value" id="resultInterest">$0.00</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Total Amount:</span>
+                <span class="result-value" id="resultTotal">$0.00</span>
+            </div>
+        </div>
+
+        <button type="button" class="clear-btn" onclick="clearForm()">Clear All</button>
+    </div>
+
+    <script>
+        function calculateSimpleInterest(principal, time, rate) {
+            return (principal * time * rate) / 100;
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount);
+        }
+
+        function clearErrors() {
+            document.getElementById('principalError').textContent = '';
+            document.getElementById('timeError').textContent = '';
+            document.getElementById('rateError').textContent = '';
+        }
+
+        function validateInputs(principal, time, rate) {
+            let isValid = true;
+            clearErrors();
+
+            if (isNaN(principal) || principal <= 0) {
+                document.getElementById('principalError').textContent = 'Please enter a valid principal amount greater than 0';
+                isValid = false;
+            }
+
+            if (isNaN(time) || time <= 0) {
+                document.getElementById('timeError').textContent = 'Please enter a valid time period greater than 0';
+                isValid = false;
+            }
+
+            if (isNaN(rate) || rate < 0) {
+                document.getElementById('rateError').textContent = 'Please enter a valid interest rate (0 or greater)';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function displayResults(principal, time, rate, simpleInterest) {
+            const totalAmount = principal + simpleInterest;
+
+            document.getElementById('resultPrincipal').textContent = formatCurrency(principal);
+            document.getElementById('resultTime').textContent = `${time} years`;
+            document.getElementById('resultRate').textContent = `${rate}%`;
+            document.getElementById('resultInterest').textContent = formatCurrency(simpleInterest);
+            document.getElementById('resultTotal').textContent = formatCurrency(totalAmount);
+
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.classList.add('show');
+        }
+
+        function clearForm() {
+            document.getElementById('calculatorForm').reset();
+            document.getElementById('resultContainer').classList.remove('show');
+            clearErrors();
+        }
+
+        document.getElementById('calculatorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const principal = parseFloat(document.getElementById('principal').value);
+            const time = parseFloat(document.getElementById('time').value);
+            const rate = parseFloat(document.getElementById('rate').value);
+
+            if (validateInputs(principal, time, rate)) {
+                const simpleInterest = calculateSimpleInterest(principal, time, rate);
+                displayResults(principal, time, rate, simpleInterest);
+            }
+        });
+
+        // Add some input validation on the fly
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value < 0) {
+                    this.value = 0;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
